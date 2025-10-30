@@ -1,6 +1,3 @@
-"""
-Views Django pour le chatbot multimodal - VERSION CORRIGÉE
-"""
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,22 +9,29 @@ from PIL import Image
 from .services.video_processor import VideoProcessor
 from .services.chatbot_orchestrator import ImageAnalyzer
 
-# ✅ CORRECTION: Import depuis services/
 from .services.chatbot_orchestrator import MultimodalChatbot
 
 logger = logging.getLogger(__name__)
 
+_video_processor = None
+
+def get_video_processor():
+    
+    global _video_processor
+    if _video_processor is None:
+        from .services.video_processor import VideoProcessor
+        _video_processor = VideoProcessor(interval=10, max_frames=30)
+        logger.info("📥 VideoProcessor chargé")
+    return _video_processor
+
 
 @csrf_exempt
 def send_message(request):
-    """
-    Endpoint pour envoyer un message au chatbot
-    """
+    
     if request.method != 'POST':
         return JsonResponse({'error': 'Method not allowed'}, status=405)
     
     try:
-        # Récupérer les données
         text_message = request.POST.get('message', '').strip()
         images = request.FILES.getlist('images')
         videos = request.FILES.getlist('videos')
@@ -40,36 +44,31 @@ def send_message(request):
         logger.info(f"📨 Traitement du message: texte={bool(text_message)}, "
                    f"images={len(images)}, vidéos={len(videos)}")
         
-        # Validation
         if not text_message and not images and not videos:
             return JsonResponse({
                 'error': 'Message vide. Envoyez du texte, une image ou une vidéo.'
             }, status=400)
         
-        # Initialiser le chatbot
         chatbot = MultimodalChatbot(session_id=session_id)
         
-        # Traiter selon le type de contenu
         response_text = None
         
-        # Cas 1: Texte seul
         if text_message and not images and not videos:
             logger.info("💬 Mode: Texte seul")
             response_text = chatbot.chat_text_only(text_message)
         
-        # Cas 2: Texte + Image(s)
         elif images:
             logger.info(f"🖼️ Mode: Texte + {len(images)} image(s)")
             
             if len(images) == 1:
-                # Une seule image - méthode optimisée
+                
                 image_data = images[0].read()
                 response_text = chatbot.chat_with_image(
                     user_message=text_message or "Analyse cette image",
                     image_data=image_data
                 )
             else:
-                # Plusieurs images
+                
                 image_data_list = [img.read() for img in images]
                 response_text = chatbot.chat_with_mixed_media(
                     user_message=text_message or "Analyse ces images",
@@ -77,38 +76,35 @@ def send_message(request):
                     videos=None
                 )
         
-        # Cas 3: Texte + Vidéo(s)
         elif videos:
             logger.info(f"🎥 Mode: Texte + {len(videos)} vidéo(s)")
             
-            # Traitement simple : prendre la première vidéo
             video_file = videos[0]
             video_path = video_file.temporary_file_path()
-            processor = VideoProcessor(interval=5, max_frames=30)
+            processor = get_video_processor() 
             frames = processor.extract_frames(video_path)
             metadata = processor.get_video_metadata(video_path)
             
-            # Analyser chaque frame avec ImageAnalyzer
             analyzer = ImageAnalyzer()
             frame_captions = []
             
             for i, frame_array in enumerate(frames):
-                # Convertir numpy array en PIL Image
+                
                 frame_pil = Image.fromarray(frame_array)
                 
-                # Analyser le contenu du frame
+                
                 caption = analyzer.extract_image_content(frame_pil)
                 frame_captions.append(caption)
                 logger.info(f"Frame {i+1}/{len(frames)} analyzed")
     
-            # Maintenant appeler le chatbot avec les vraies captions
+            
             response_text = chatbot.chat_with_video(
                 user_message=text_message or "Analyse cette vidéo",
                 frame_captions=frame_captions,
                 video_metadata=metadata
             )
         
-        # Vérifier la réponse
+        
         if not response_text:
             return JsonResponse({
                 'error': 'Impossible de générer une réponse'
@@ -130,12 +126,12 @@ def send_message(request):
 
 
 def chat_view(request):
-    """Vue principale du chat"""
+    
     return render(request, 'analyzer/chatbot.html')
 
 
 def get_history(request):
-    """Récupérer l'historique de conversation"""
+    
     try:
         session_id = request.session.session_key
         
@@ -144,7 +140,6 @@ def get_history(request):
         
         chatbot = MultimodalChatbot(session_id=session_id)
         
-        # Récupérer l'historique
         messages = chatbot.memory.messages
         
         return JsonResponse({
@@ -179,12 +174,9 @@ def clear_history(request):
 
 
 def test_chatbot(request):
-    """
-    Vue de test pour vérifier que le chatbot fonctionne
-    Accès: /test-chatbot/
-    """
+    
     try:
-        # Test simple
+        
         chatbot = MultimodalChatbot(session_id="test-session")
         response = chatbot.chat_text_only("Bonjour, test de connexion!")
         
