@@ -20,7 +20,7 @@ google-api-core==2.28.1
 google-api-python-client==2.185.0
 google-auth==2.42.0
 google-auth-httplib2==0.2.0
-google-generativeai>=0.8.6
+google-generativeai==0.8.5
 googleapis-common-protos==1.71.0
 greenlet==3.2.4
 grpcio==1.76.0
@@ -41,7 +41,7 @@ jsonpointer==3.0.0
 langchain==1.0.2
 langchain-classic==1.0.0
 langchain-core==1.0.1
-langchain-google-genai==3.0.0
+langchain-google-genai==2.0.5
 langchain-text-splitters==1.0.0
 langgraph==1.0.2
 langgraph-checkpoint==3.0.0
