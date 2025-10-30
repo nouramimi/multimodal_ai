@@ -46,7 +46,7 @@ langgraph==0.2.62
 langgraph-checkpoint==2.0.10
 langgraph-prebuilt==0.2.3
 langgraph-sdk==0.2.9
-langsmith==0.2.18
+langsmith==0.2.11
 MarkupSafe==3.0.3
 marshmallow==3.26.1
 git+https://github.com/nouramimi/multimodal_ai.git@main#subdirectory=libs/moviepy-master
