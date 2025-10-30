@@ -1,1 +1,1 @@
-gunicorn multimodalai.wsgi
+gunicorn multimodal_ai.wsgi
