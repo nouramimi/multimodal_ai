@@ -1,1 +1,1 @@
-web: gunicorn multimodalai.wsgi
+gunicorn multimodalai.wsgi
