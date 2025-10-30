@@ -1,0 +1,65 @@
+# --------------------------
+# Python
+# --------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.swp
+*.cover
+*.log
+
+# --------------------------
+# Virtual environments
+# --------------------------
+venv/
+env/
+ENV/
+.venv/
+
+# --------------------------
+# Environment variables / secrets
+# --------------------------
+.env
+*.env
+
+# --------------------------
+# Django specific
+# --------------------------
+*.sqlite3              # Local DB
+db.sqlite3
+*.pot
+*.mo
+staticfiles/           # Collected static files
+media/                 # User-uploaded files (use cloud storage in production)
+*.pyc
+
+# --------------------------
+# IDE / Editor
+# --------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# --------------------------
+# OS / System
+# --------------------------
+.DS_Store
+Thumbs.db
+
+# --------------------------
+# Jupyter / Data science
+# --------------------------
+.ipynb_checkpoints/
+*.csv
+*.h5
+*.pkl
+*.pt
+*.ckpt
+
+# --------------------------
+# Optional: Large AI model files (if you have them locally)
+# --------------------------
+models/
+checkpoints/
