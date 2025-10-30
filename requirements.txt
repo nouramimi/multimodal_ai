@@ -45,7 +45,7 @@ langchain-text-splitters==0.3.5
 langgraph==0.2.62
 langgraph-checkpoint==2.0.10
 langgraph-prebuilt==0.2.3
-langgraph-sdk==0.2.9
+langgraph-sdk==0.1.42
 langsmith==0.2.11
 MarkupSafe==3.0.3
 marshmallow==3.26.1
